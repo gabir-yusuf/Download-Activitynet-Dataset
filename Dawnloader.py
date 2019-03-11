@@ -1,16 +1,18 @@
 import os
 import json
-from pprint import pprint
 import pafy
 
 # specify download directory
 directory = '/content/Dataset/'
 
 videoCounter = 0
-unavailable = 0
-unavailable_tr = 0
-unavailable_tst = 0
-unavailable_val = 0
+
+# these lists will record unavailable videos by their key so we can find them 
+# in the downloaded files. it's important to remove these fake files from 
+# datset files for proper training.
+unavailable_tr = []
+unavailable_tst = []
+unavailable_val = []
 
 # open json file
 with open('activity_net.v1-3.min.json') as data_file:    
@@ -29,6 +31,7 @@ for key in videos:
 
     # find video label
     annotations = video['annotations']
+    print(key)
     label = ''
     if len(annotations) != 0:
         label = annotations[0]['label']
@@ -41,6 +44,7 @@ for key in videos:
 
     # take url of video
     url = video['url']
+    
     try:
         # start to download
         video = pafy.new(url)
@@ -51,18 +55,21 @@ for key in videos:
         
     except Exception as inst:
         if subset == 'training':
-            unavailable_tr += 1
-            print('Number of Unavailable Training Videos: ', unavailable_tr)
+            unavailable_tr.append(key)
+            print('Number of Unavailable Training Videos: ',len(unavailable_tr))
             print('URL: ', url)
             
         if subset == 'validation':
-            unavailable_val += 1
-            print('Number of Unavailable Validation Videos: ', unavailable_val)
+            unavailable_val.append(key)
+            print('Number of Unavailable Validation Videos: ', len(unavailable_val))
             print('URL: ', url)
             
         if subset == 'testing':
-            unavailable_tst += 1
-            print('Number of Unavailable Testing Videos: ', unavailable_tst)
+            unavailable_tst.append(key)
+            print('Number of Unavailable Testing Videos: ', len(unavailable_tst))
             print('URL: ', url)
-            
-        
+
+# overall unavailable videos
+print('Number of Unavailable training videos: ',len(unavailable_tr))
+print('Number of Unavailable validation videos: ',len(unavailable_val))
+print('Number of Unavailable testing videos: ',len(unavailable_tst))
