@@ -1,18 +1,16 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Mar 10 14:51:14 2019
-
-@author: gabir
-"""
 import os
 import json
 from pprint import pprint
 import pafy
 
 # specify download directory
-directory = '/home/gabir/Desktop/Dawnload_Activitynet_dataset'
+directory = '/content/Dataset/'
+
 videoCounter = 0
+unavailable = 0
+unavailable_tr = 0
+unavailable_tst = 0
+unavailable_val = 0
 
 # open json file
 with open('activity_net.v1-3.min.json') as data_file:    
@@ -43,23 +41,28 @@ for key in videos:
 
     # take url of video
     url = video['url']
-
-    # start to download
-    video = pafy.new(url)
-    best = video.getbest()     
-    filename = best.download(filepath=label_dir + '/' + key)
-    print('Downloading... ' + str(videoCounter) + '\n')
-    videoCounter += 1
-    
-# =============================================================================
-# 	try:
-# 		video = pafy.new(url)
-# 		best = video.getbest()
-# 		filename = best.download(filepath=label_dir + '/' + key)
-# 		print('Downloading... ' + str(videoCounter) + '\n')
-# 		videoCounter += 1
-# 	except Exception as inst:
-# 		print('Error!')
-# =============================================================================
+    try:
+        # start to download
+        video = pafy.new(url)
+        best = video.getbest()     
+        filename = best.download(filepath=label_dir + '/' + key)
+        print('Downloading... ' + str(videoCounter) + '\n')
+        videoCounter += 1
         
-    
+    except Exception as inst:
+        if subset == 'training':
+            unavailable_tr += 1
+            print('Number of Unavailable Training Videos: ', unavailable_tr)
+            print('URL: ', url)
+            
+        if subset == 'validation':
+            unavailable_val += 1
+            print('Number of Unavailable Validation Videos: ', unavailable_val)
+            print('URL: ', url)
+            
+        if subset == 'testing':
+            unavailable_tst += 1
+            print('Number of Unavailable Testing Videos: ', unavailable_tst)
+            print('URL: ', url)
+            
+        
