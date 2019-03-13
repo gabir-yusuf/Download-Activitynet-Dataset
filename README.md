@@ -8,4 +8,4 @@ For more informations about the Activitynet dataset go to this link: http://acti
   -  `pip install pafy`
   
   
-**If you have any troubles don't hesitate to contact me: gabir.yusuf@gmail.com**
+**If you have any troubles you can put it in issues**
